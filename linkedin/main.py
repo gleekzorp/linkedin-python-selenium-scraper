@@ -3,7 +3,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
 import time
-from secrets import secret
+# from secrets import secret
+import secret
 
 
 def login():
@@ -14,8 +15,15 @@ def login():
     driver.find_element(By.ID, 'username').send_keys(secret.USER_NAME)
     driver.find_element(By.ID, 'password').send_keys(secret.PASSWORD + Keys.ENTER)
     time.sleep(2)
-    print(driver.title)
+    print('login')
     driver.close()
 
 
-login()
+def job_search():
+    login()
+    driver = webdriver.Chrome()
+    driver.find_element(By.ID, 'jobs-nav-item').click()
+    time.sleep(2)
+
+
+job_search()

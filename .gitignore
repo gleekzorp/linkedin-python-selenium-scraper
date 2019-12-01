@@ -89,6 +89,8 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+secrets
+secrets/secret.py
 secret.py
 
 # Spyder project settings
