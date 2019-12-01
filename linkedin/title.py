@@ -7,5 +7,6 @@ def get_title():
     print(driver.title)
     driver.close()
 
+
 get_title()
 
