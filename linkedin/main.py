@@ -14,16 +14,15 @@ def login():
     time.sleep(2)
     driver.find_element(By.ID, 'username').send_keys(secret.USER_NAME)
     driver.find_element(By.ID, 'password').send_keys(secret.PASSWORD + Keys.ENTER)
-    time.sleep(2)
+    time.sleep(5)
     print('login')
-    driver.close()
 
 
 def job_search():
     login()
     driver = webdriver.Chrome()
-    driver.find_element(By.ID, 'jobs-nav-item').click()
-    time.sleep(2)
+    driver.find_element(By.XPATH, '//*[@id="jobs-nav-item"]').click()
+    driver.close()
 
 
 job_search()
