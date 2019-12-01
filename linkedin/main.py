@@ -6,9 +6,10 @@ import time
 # from secrets import secret
 import secret
 
+global_driver = webdriver.Chrome()
 
-def login():
-    driver = webdriver.Chrome()
+
+def login(driver):
     driver.get('https://www.linkedin.com')
     driver.find_element(By.CSS_SELECTOR, "[class*='nav__button-secondary']").click()
     time.sleep(2)
@@ -18,11 +19,10 @@ def login():
     print('login')
 
 
-def job_search():
-    login()
-    driver = webdriver.Chrome()
+def job_search(driver):
+    login(driver)
     driver.find_element(By.XPATH, '//*[@id="jobs-nav-item"]').click()
     driver.close()
 
 
-job_search()
+job_search(global_driver)
