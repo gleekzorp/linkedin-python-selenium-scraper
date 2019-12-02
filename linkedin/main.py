@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import os.path
 
 import time
 # from linkedin_secrets import secret
@@ -14,6 +15,9 @@ driver = webdriver.Chrome()
 search_phrase = 'Software Engineer'
 # filter_index: 1 = internship, 2 = entry level, 3 = associate
 filter_index = 1
+job_file = ['internship', 'entry_level', 'associate']
+current_date = '2019-12-02'
+jobs_list = []
 
 
 def login():
@@ -32,6 +36,27 @@ def filter_search():
     driver.find_element(By.XPATH, f'//*[@id="experience-level-facet-values"]//ul//li[{filter_index}]//label').click()
     time.sleep(5)
     driver.find_element(By.XPATH, '//*[@id="experience-level-facet-values"]//button[2]').click()
+
+
+def add_jobs_to_list(jobs):
+    for job in jobs:
+        job.click()
+        time.sleep(5)
+        job_company = driver.find_element(By.XPATH, '//*[@class="jobs-details-top-card__company-url ember-view"]')
+        jobs_list.append(job_company.text)
+        jobs_list.append(job_company.get_attribute('href'))
+        time.sleep(5)
+
+
+def write_jobs_to_file(jobs):
+    # f = open(f'{job_file[filter_index]}-{current_date}.txt', "w")
+    f = open(f'{job_file[filter_index]}.txt', "w")
+    for job in jobs:
+        job.click()
+        time.sleep(5)
+        job_company = driver.find_element(By.XPATH, '//*[@class="jobs-details-top-card__company-url ember-view"]')
+        f.write(job_company.text + "\n" + job_company.get_attribute('href') + "\n\n")
+        time.sleep(5)
 
 
 def job_search():
@@ -54,13 +79,12 @@ def job_search():
         EC.presence_of_all_elements_located((By.XPATH, '//*[@class="jobs-search-results__list artdeco-list"]//h3//a'))
     )
     print(len(links))
-
-    # for link in links:
-    #     link.click()
-    #     time.sleep(1)
+    # add_jobs_to_list(links)
+    write_jobs_to_file(links)
 
     # for link in links:
     #     print(f"{link.text} - {link.get_attribute('href')}")
+    print(jobs_list)
     driver.close()
 
 
@@ -78,5 +102,6 @@ job_search()
 # //*[@id='experience-level-facet-values']//ul//li[1]//input
 # //*[@id="experience-level-facet-values"]//div//div//div//button[2]
 # //*[@id="experience-level-facet-values"]//button[2]
+# //*[@class="jobs-details-top-card__company-url ember-view"]
 
 # https://stackoverflow.com/questions/35641019/how-do-you-use-credentials-saved-by-the-browser-in-auto-login-script-in-python-2

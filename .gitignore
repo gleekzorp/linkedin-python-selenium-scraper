@@ -107,3 +107,8 @@ secret.py
 .mypy_cache/
 
 .idea/
+
+# files with jobs
+internship.txt
+entry_level.txt
+associate.txt
