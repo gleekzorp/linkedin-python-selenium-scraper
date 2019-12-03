@@ -55,7 +55,13 @@ def write_jobs_to_file(jobs):
         job.click()
         time.sleep(5)
         job_company = driver.find_element(By.XPATH, '//*[@class="jobs-details-top-card__company-url ember-view"]')
-        f.write(job_company.text + "\n" + job_company.get_attribute('href') + "\n\n")
+        job_title = driver.find_element(By.XPATH, '//*[@class="jobs-details-top-card__content-container"]/a')
+        f.write(
+            job_company.text + "\n" +
+            job_company.get_attribute('href') + "\n" +
+            job_title.text + "\n" +
+            job_title.get_attribute('href') + "\n\n"
+        )
         time.sleep(5)
 
 
@@ -103,5 +109,6 @@ job_search()
 # //*[@id="experience-level-facet-values"]//div//div//div//button[2]
 # //*[@id="experience-level-facet-values"]//button[2]
 # //*[@class="jobs-details-top-card__company-url ember-view"]
+# //*[@class="jobs-details-top-card__content-container"]/a
 
 # https://stackoverflow.com/questions/35641019/how-do-you-use-credentials-saved-by-the-browser-in-auto-login-script-in-python-2
