@@ -62,20 +62,22 @@ def add_jobs_to_list(jobs):
         print(job_dict)
 
 
+def scroll_to_pagination():
+    pagination = driver.find_element(By.XPATH, '//*[@class="jobs-search-two-pane__pagination"]')
+    time.sleep(5)
+    ActionChains(driver).move_to_element(pagination).perform()
+    time.sleep(5)
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    driver.execute_script("arguments[0].scrollIntoView();", pagination)
+
+
 def job_search():
     login()
     driver.find_element(By.XPATH, '//*[@id="jobs-nav-item"]').click()
     driver.find_element(By.XPATH, '//*[@class="jobs-search-box__text-input"]').send_keys(search_phrase + Keys.ENTER)
     time.sleep(5)
     # filter_search()
-    # pagination = driver.find_element(By.XPATH, '//*[@class="jobs-search-two-pane__pagination"]')
-    # time.sleep(5)
-    # ActionChains(driver).move_to_element(pagination).perform()
-    # time.sleep(5)
-    # links = driver.find_elements(By.XPATH, '//*[@class="jobs-search-results__list artdeco-list"]//li//div//h3//a')
-
-    # driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    # driver.execute_script("arguments[0].scrollIntoView();", pagination)
+    # scroll_to_pagination()
     time.sleep(5)
     links = WebDriverWait(driver, 20).until(
         # EC.presence_of_all_elements_located((By.XPATH, '//*[@class="jobs-search-results__list artdeco-list"]//li//div//h3//a'))
