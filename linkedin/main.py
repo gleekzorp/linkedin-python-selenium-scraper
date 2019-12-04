@@ -5,12 +5,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import os.path
-
 import time
 # from linkedin_secrets import secret
 import secret
 
+# Global Variables
 driver = webdriver.Chrome()
 search_phrase = 'Software Engineer'
 # filter_index: 1 = internship, 2 = entry level, 3 = associate
@@ -18,6 +17,7 @@ filter_index = 1
 job_file = ['internship', 'entry_level', 'associate']
 current_date = '2019-12-02'
 jobs_list = []
+job_id = 0
 
 
 def login():
@@ -39,30 +39,27 @@ def filter_search():
 
 
 def add_jobs_to_list(jobs):
+    global job_id
     for job in jobs:
         job.click()
         time.sleep(5)
-        job_company = driver.find_element(By.XPATH, '//*[@class="jobs-details-top-card__company-url ember-view"]')
-        jobs_list.append(job_company.text)
-        jobs_list.append(job_company.get_attribute('href'))
-        time.sleep(5)
-
-
-def write_jobs_to_file(jobs):
-    # f = open(f'{job_file[filter_index]}-{current_date}.txt', "w")
-    f = open(f'{job_file[filter_index]}.txt', "w")
-    for job in jobs:
-        job.click()
-        time.sleep(5)
-        job_company = driver.find_element(By.XPATH, '//*[@class="jobs-details-top-card__company-url ember-view"]')
         job_title = driver.find_element(By.XPATH, '//*[@class="jobs-details-top-card__content-container"]/a')
-        f.write(
-            job_company.text + "\n" +
-            job_company.get_attribute('href') + "\n" +
-            job_title.text + "\n" +
-            job_title.get_attribute('href') + "\n\n"
-        )
-        time.sleep(5)
+        job_dict = {'id': job_id, 'job_title': job_title.text, 'job_title_link': job_title.get_attribute('href')}
+        if driver.find_elements(By.XPATH, '//*[@class="jobs-details-top-card__company-url ember-view"]'):
+            job_dict['company_name'] = driver.find_element(By.XPATH, '//*[@class="jobs-details-top-card__company-url ember-view"]').text
+            job_dict['company_link'] = driver.find_element(By.XPATH, '//*[@class="jobs-details-top-card__company-url ember-view"]').get_attribute('href')
+        else:
+            job_dict['company_name'] = driver.find_element(By.XPATH, '//*[@class="jobs-details-top-card__company-info t-14 t-black--light t-normal mt1"]').text
+
+        if driver.find_elements(By.XPATH, '//*[@data-control-name="jobdetails_profile_poster"]'):
+            job_dict['posted_by_name'] = driver.find_element(By.XPATH, '//*[@class="jobs-poster__name t-14 t-black t-bold mb0"]').text
+            job_dict['posted_by_link'] = driver.find_element(By.XPATH, '//*[@data-control-name="jobdetails_profile_poster"]').get_attribute('href')
+        else:
+            pass
+        jobs_list.append(dict(job_dict))
+        time.sleep(2)
+        job_id += 1
+        print(job_dict)
 
 
 def job_search():
@@ -70,7 +67,7 @@ def job_search():
     driver.find_element(By.XPATH, '//*[@id="jobs-nav-item"]').click()
     driver.find_element(By.XPATH, '//*[@class="jobs-search-box__text-input"]').send_keys(search_phrase + Keys.ENTER)
     time.sleep(5)
-    filter_search()
+    # filter_search()
     # pagination = driver.find_element(By.XPATH, '//*[@class="jobs-search-two-pane__pagination"]')
     # time.sleep(5)
     # ActionChains(driver).move_to_element(pagination).perform()
@@ -85,8 +82,8 @@ def job_search():
         EC.presence_of_all_elements_located((By.XPATH, '//*[@class="jobs-search-results__list artdeco-list"]//h3//a'))
     )
     print(len(links))
-    # add_jobs_to_list(links)
-    write_jobs_to_file(links)
+    add_jobs_to_list(links)
+    # write_jobs_to_file(links, 'w')
 
     # for link in links:
     #     print(f"{link.text} - {link.get_attribute('href')}")
@@ -110,5 +107,10 @@ job_search()
 # //*[@id="experience-level-facet-values"]//button[2]
 # //*[@class="jobs-details-top-card__company-url ember-view"]
 # //*[@class="jobs-details-top-card__content-container"]/a
+# //*[@class="jobs-details-top-card__content-container"]//span[3]
+# //*[@id="job-details"]/div[1]/div/a
+# //*[@id="job-details"]/div[1]/div/div/div/p[1]
+# //*[@data-control-name="jobdetails_profile_poster"]
+# //*[@class="jobs-details-top-card__company-info t-14 t-black--light t-normal mt1"]
 
 # https://stackoverflow.com/questions/35641019/how-do-you-use-credentials-saved-by-the-browser-in-auto-login-script-in-python-2
