@@ -1,3 +1,8 @@
+# TODO: Not getting all 25 results from the page.
+# TODO: Create a function that will click through the pagination.
+# TODO: Get rid of the excess time.sleeps and convert some of them to expected_conditions.
+# TODO: Possibly add a filter for date posted.
+
 from selenium import webdriver
 from selenium.webdriver import ActionChains
 from selenium.webdriver.chrome.options import Options
@@ -9,10 +14,11 @@ import time
 # from linkedin_secrets import secret
 import secret
 
+
 # Global Variables
+# filter_index: 1 = internship, 2 = entry level, 3 = associate
 driver = webdriver.Chrome()
 search_phrase = 'Software Engineer'
-# filter_index: 1 = internship, 2 = entry level, 3 = associate
 filter_index = 1
 job_file = ['internship', 'entry_level', 'associate']
 current_date = '2019-12-02'
@@ -30,7 +36,7 @@ def login():
     print('logged in')
 
 
-def filter_search():
+def filter_search_by_experience_level():
     driver.find_element(By.XPATH, '//*[@aria-label="Filter results by: Experience Level"]').click()
     time.sleep(5)
     driver.find_element(By.XPATH, f'//*[@id="experience-level-facet-values"]//ul//li[{filter_index}]//label').click()
@@ -45,6 +51,11 @@ def add_jobs_to_list(jobs):
         time.sleep(5)
         job_title = driver.find_element(By.XPATH, '//*[@class="jobs-details-top-card__content-container"]/a')
         job_dict = {'id': job_id, 'job_title': job_title.text, 'job_title_link': job_title.get_attribute('href')}
+        if driver.find_elements(By.XPATH, '//*[@data-control-name="commute_module_anchor"]'):
+            job_dict['job_location'] = driver.find_element(By.XPATH, '//*[@data-control-name="commute_module_anchor"]').text
+        else:
+            job_dict['job_location'] = driver.find_element(By.XPATH, '//*[@class="jobs-details-top-card__content-container"]//span[3]').text
+
         if driver.find_elements(By.XPATH, '//*[@class="jobs-details-top-card__company-url ember-view"]'):
             job_dict['company_name'] = driver.find_element(By.XPATH, '//*[@class="jobs-details-top-card__company-url ember-view"]').text
             job_dict['company_link'] = driver.find_element(By.XPATH, '//*[@class="jobs-details-top-card__company-url ember-view"]').get_attribute('href')
@@ -67,8 +78,8 @@ def scroll_to_pagination():
     time.sleep(5)
     ActionChains(driver).move_to_element(pagination).perform()
     time.sleep(5)
-    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    driver.execute_script("arguments[0].scrollIntoView();", pagination)
+    # driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    # driver.execute_script("arguments[0].scrollIntoView();", pagination)
 
 
 def job_search():
@@ -76,25 +87,20 @@ def job_search():
     driver.find_element(By.XPATH, '//*[@id="jobs-nav-item"]').click()
     driver.find_element(By.XPATH, '//*[@class="jobs-search-box__text-input"]').send_keys(search_phrase + Keys.ENTER)
     time.sleep(5)
-    # filter_search()
-    # scroll_to_pagination()
+    filter_search_by_experience_level()
+    scroll_to_pagination()
     time.sleep(5)
     links = WebDriverWait(driver, 20).until(
         # EC.presence_of_all_elements_located((By.XPATH, '//*[@class="jobs-search-results__list artdeco-list"]//li//div//h3//a'))
         EC.presence_of_all_elements_located((By.XPATH, '//*[@class="jobs-search-results__list artdeco-list"]//h3//a'))
     )
-    print(len(links))
     add_jobs_to_list(links)
-    # write_jobs_to_file(links, 'w')
-
-    # for link in links:
-    #     print(f"{link.text} - {link.get_attribute('href')}")
-    print(jobs_list)
+    print(f'links length: {len(links)}')
+    print(f'job_list length: {len(jobs_list)}')
     driver.close()
 
 
 job_search()
-
 
 
 # $('#jobs-search-box-keyword-id-ember529')
