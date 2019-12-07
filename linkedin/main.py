@@ -1,7 +1,6 @@
 # TODO: Not getting all 25 results from the page.
-# TODO: Create a function that will click through the pagination.
+# TODO: Create a function that will click through the pagination.  The active li has an active tag in the name, try using that to select the next element past it.
 # TODO: Get rid of the excess time.sleeps and convert some of them to expected_conditions.
-# TODO: Possibly add a filter for date posted.
 
 from selenium import webdriver
 from selenium.webdriver import ActionChains
@@ -17,8 +16,10 @@ import secret
 
 # Global Variables
 # filter_index: 1 = internship, 2 = entry level, 3 = associate
+# filter_date_range = '24', 'week' or 'month'
 driver = webdriver.Chrome()
 search_phrase = 'Software Engineer'
+search_date_posted_range = '24'
 filter_index = 1
 job_file = ['internship', 'entry_level', 'associate']
 current_date = '2019-12-02'
@@ -42,6 +43,21 @@ def filter_search_by_experience_level():
     driver.find_element(By.XPATH, f'//*[@id="experience-level-facet-values"]//ul//li[{filter_index}]//label').click()
     time.sleep(5)
     driver.find_element(By.XPATH, '//*[@id="experience-level-facet-values"]//button[2]').click()
+    time.sleep(5)
+
+
+def filter_by_date_posted(date_posted):
+    driver.find_element(By.XPATH, '//*[@aria-label="Date Posted filter. Clicking this button displays all Date Posted filter options."]').click()
+    time.sleep(5)
+    if date_posted == '24':
+        driver.find_element(By.XPATH, '//*[@id="date-posted-facet-values"]//li[1]/label').click()
+    if date_posted == 'week':
+        driver.find_element(By.XPATH, '//*[@id="date-posted-facet-values"]//li[2]/label').click()
+    if date_posted == 'month':
+        driver.find_element(By.XPATH, '//*[@id="date-posted-facet-values"]//li[3]/label').click()
+    time.sleep(5)
+    driver.find_element(By.XPATH, '//*[@id="date-posted-facet-values"]//button[2]').click()
+    time.sleep(5)
 
 
 def add_jobs_to_list(jobs):
@@ -85,11 +101,13 @@ def scroll_to_pagination():
 def job_search():
     login()
     driver.find_element(By.XPATH, '//*[@id="jobs-nav-item"]').click()
-    driver.find_element(By.XPATH, '//*[@class="jobs-search-box__text-input"]').send_keys(search_phrase + Keys.ENTER)
+    driver.find_element(By.XPATH, '//*[@class="jobs-search-box__text-input"]').send_keys(search_phrase)
+    time.sleep(1)
+    driver.find_element(By.XPATH, '//*[@class="jobs-search-box__text-input"]').send_keys(Keys.ENTER)
     time.sleep(5)
     filter_search_by_experience_level()
+    filter_by_date_posted(search_date_posted_range)
     scroll_to_pagination()
-    time.sleep(5)
     links = WebDriverWait(driver, 20).until(
         # EC.presence_of_all_elements_located((By.XPATH, '//*[@class="jobs-search-results__list artdeco-list"]//li//div//h3//a'))
         EC.presence_of_all_elements_located((By.XPATH, '//*[@class="jobs-search-results__list artdeco-list"]//h3//a'))
@@ -120,5 +138,9 @@ job_search()
 # //*[@id="job-details"]/div[1]/div/div/div/p[1]
 # //*[@data-control-name="jobdetails_profile_poster"]
 # //*[@class="jobs-details-top-card__company-info t-14 t-black--light t-normal mt1"]
+# //*[@aria-label="Date Posted filter."]
+# //*[@aria-label="Date Posted filter. Clicking this button displays all Date Posted filter options."]
+# //*[@id="date-posted-facet-values"]//li[1]/label
+# //*[@id="date-posted-facet-values"]//button[2]
 
 # https://stackoverflow.com/questions/35641019/how-do-you-use-credentials-saved-by-the-browser-in-auto-login-script-in-python-2
