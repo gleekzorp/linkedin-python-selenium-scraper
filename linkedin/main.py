@@ -14,17 +14,15 @@ import time
 import secret
 
 
-# Global Variables
-# filter_index: 1 = internship, 2 = entry level, 3 = associate
-# filter_date_range = '24', 'week' or 'month'
 driver = webdriver.Chrome()
+jobs_list = []
+job_id = 0
+
+# Items you can change for search phrases
 search_phrase = 'Software Engineer'
 search_date_posted_range = '24'
 filter_index = 1
-job_file = ['internship', 'entry_level', 'associate']
 current_date = '2019-12-02'
-jobs_list = []
-job_id = 0
 
 
 def login():
@@ -121,26 +119,10 @@ def job_search():
 job_search()
 
 
-# $('#jobs-search-box-keyword-id-ember529')
-# $('.jobs-search-box__text-input')
-# //*[@class="jobs-search-results__list artdeco-list"]//li//div//h3//a
-# //*[@class="jobs-search-two-pane__pagination"]
-# A_jobssearch_job_result_click
-# //*[@itemtype='http://schema.org/ItemList']//h3//a
-# //*[@aria-label='Filter results by: Experience Level']
-# //*[@id='experience-level-facet-values']//ul//li[1]//input
-# //*[@id="experience-level-facet-values"]//div//div//div//button[2]
-# //*[@id="experience-level-facet-values"]//button[2]
-# //*[@class="jobs-details-top-card__company-url ember-view"]
-# //*[@class="jobs-details-top-card__content-container"]/a
-# //*[@class="jobs-details-top-card__content-container"]//span[3]
-# //*[@id="job-details"]/div[1]/div/a
-# //*[@id="job-details"]/div[1]/div/div/div/p[1]
-# //*[@data-control-name="jobdetails_profile_poster"]
-# //*[@class="jobs-details-top-card__company-info t-14 t-black--light t-normal mt1"]
-# //*[@aria-label="Date Posted filter."]
-# //*[@aria-label="Date Posted filter. Clicking this button displays all Date Posted filter options."]
-# //*[@id="date-posted-facet-values"]//li[1]/label
-# //*[@id="date-posted-facet-values"]//button[2]
-
-# https://stackoverflow.com/questions/35641019/how-do-you-use-credentials-saved-by-the-browser-in-auto-login-script-in-python-2
+# Testing for Multiple Browsers
+# def test_multiple_browsers():
+#     login()
+#     driver.get('https://www.linkedin.com/jobs/search/?geoId=103644278&keywords=software%20engineer&location=United%20States&start=100')
+#
+#
+# test_multiple_browsers()

@@ -1,5 +1,7 @@
 import os.path
 
+# job_file = ['internship', 'entry_level', 'associate']
+
 # def write_jobs_to_file(jobs, write_or_append):
 #     # f = open(f'{job_file[filter_index]}-{current_date}.txt', "w")
 #     f = open(f'{job_file[filter_index]}.txt', write_or_append)
